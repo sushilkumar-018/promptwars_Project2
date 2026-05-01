@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Votes Are Counted — Interactive Election Explainer</title>
+    <meta name="description" content="An interactive, animated guide to the election process: from ballot casting to certification. Explore voting systems like FPTP, RCV, and Proportional Representation.">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Particle Canvas Background -->
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- ==================== HERO ==================== -->
+    <header class="hero" id="hero">
+        <div class="hero-bg">
+            <div class="glow-orb orb-1"></div>
+            <div class="glow-orb orb-2"></div>
+            <div class="glow-orb orb-3"></div>
+        </div>
+        <div class="hero-content">
+            <span class="badge">
+                <span class="badge-dot"></span>
+                Interactive Explainer
+            </span>
+            <h1 class="hero-title">
+                <span class="title-line">How Votes</span>
+                <span class="title-line gradient-text">Are Counted</span>
+            </h1>
+            <p class="hero-subtitle">From ballot casting to certification — explore the mechanics of democracy through animated, interactive simulations.</p>
+            <button id="start-btn" class="cta-button">
+                <span>Start Exploring</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="scroll-hint">
+                <div class="mouse">
+                    <div class="wheel"></div>
+                </div>
+                <span>Scroll to explore</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==================== MAIN CONTENT ==================== -->
+    <main id="main-content" class="hidden">
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
+        <!-- ========== PIPELINE SECTION ========== -->
+        <section class="pipeline-section" id="pipeline-section">
+            <div class="section-header fade-up">
+                <span class="badge"><span class="badge-dot"></span>The Process</span>
+                <h2>The Election Pipeline</h2>
+                <p>Follow the journey of your vote through five critical stages. Click any stage to learn more.</p>
+            </div>
+            <div class="pipeline fade-up" id="pipeline">
+                <div class="pipeline-track">
+                    <div class="pipeline-fill" id="pipeline-fill"></div>
+                </div>
+                <div class="pipeline-stages" id="pipeline-stages">
+                    <!-- Injected by JS -->
+                </div>
+            </div>
+            <div class="pipeline-detail glass-panel" id="pipeline-detail">
+                <div class="detail-icon" id="detail-icon">🗳</div>
+                <h3 id="detail-title">Select a stage above</h3>
+                <p id="detail-desc">Click on any of the stages in the pipeline to see a detailed breakdown of what happens, potential issues, and fun facts.</p>
+                <div id="detail-extras"></div>
+            </div>
+        </section>
+
+        <!-- ========== INTERACTIVE BALLOT CASTING ========== -->
+        <section class="ballot-section" id="ballot-section">
+            <div class="section-header fade-up">
+                <span class="badge" style="--badge-color: #10B981;"><span class="badge-dot" style="background: #10B981;"></span>Try It Yourself</span>
+                <h2>Cast Your Vote</h2>
+                <p>Experience the voting process firsthand. Select a candidate below and watch your ballot get processed through the system.</p>
+            </div>
+            <div class="ballot-booth glass-panel fade-up" id="ballot-booth">
+                <div class="ballot-candidates">
+                    <button class="ballot-candidate" data-candidate="red" data-color="#EF4444">
+                        <div class="ballot-avatar" style="--avatar-color: #EF4444;">
+                            <svg viewBox="0 0 24 24" fill="none"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="currentColor"/></svg>
+                        </div>
+                        <span class="ballot-name">Red Party</span>
+                        <span class="ballot-check">✓</span>
+                    </button>
+                    <button class="ballot-candidate" data-candidate="blue" data-color="#3B82F6">
+                        <div class="ballot-avatar" style="--avatar-color: #3B82F6;">
+                            <svg viewBox="0 0 24 24" fill="none"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="currentColor"/></svg>
+                        </div>
+                        <span class="ballot-name">Blue Party</span>
+                        <span class="ballot-check">✓</span>
+                    </button>
+                    <button class="ballot-candidate" data-candidate="yellow" data-color="#F59E0B">
+                        <div class="ballot-avatar" style="--avatar-color: #F59E0B;">
+                            <svg viewBox="0 0 24 24" fill="none"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="currentColor"/></svg>
+                        </div>
+                        <span class="ballot-name">Yellow Party</span>
+                        <span class="ballot-check">✓</span>
+                    </button>
+                </div>
+                <button class="cast-vote-btn" id="cast-vote-btn" disabled>
+                    <span>Cast Your Ballot</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <div class="ballot-journey hidden" id="ballot-journey">
+                    <div class="journey-step" id="j-step-1">
+                        <div class="journey-icon">🗳</div>
+                        <div class="journey-line"></div>
+                        <span>Ballot Cast</span>
+                    </div>
+                    <div class="journey-step" id="j-step-2">
+                        <div class="journey-icon">🔒</div>
+                        <div class="journey-line"></div>
+                        <span>Sealed & Secured</span>
+                    </div>
+                    <div class="journey-step" id="j-step-3">
+                        <div class="journey-icon">🚚</div>
+                        <div class="journey-line"></div>
+                        <span>Transported</span>
+                    </div>
+                    <div class="journey-step" id="j-step-4">
+                        <div class="journey-icon">🔢</div>
+                        <div class="journey-line"></div>
+                        <span>Counted</span>
+                    </div>
+                    <div class="journey-step" id="j-step-5">
+                        <div class="journey-icon">✅</div>
+                        <span>Certified</span>
+                    </div>
+                </div>
+                <div class="ballot-tooltip hidden" id="ballot-tooltip">Your vote is anonymous and encrypted. No one can trace it back to you.</div>
+            </div>
+        </section>
+
+        <!-- ========== VOTING SYSTEMS ========== -->
+        <section class="systems-section" id="voting-systems-section">
+            <div class="section-header fade-up">
+                <span class="badge" style="--badge-color: #8B5CF6;"><span class="badge-dot" style="background: #8B5CF6;"></span>Counting Methods</span>
+                <h2>Voting Systems Explained</h2>
+                <p>Different mathematical models produce vastly different outcomes from the same set of votes.</p>
+            </div>
+            
+            <div class="systems-card glass-panel fade-up">
+                <div class="tabs">
+                    <button class="tab-btn active" data-target="fptp">
+                        <span class="tab-icon">🏆</span>
+                        First-Past-The-Post
+                    </button>
+                    <button class="tab-btn" data-target="rcv">
+                        <span class="tab-icon">🔄</span>
+                        Ranked Choice
+                    </button>
+                    <button class="tab-btn" data-target="pr">
+                        <span class="tab-icon">📊</span>
+                        Proportional
+                    </button>
+                </div>
+                
+                <!-- FPTP -->
+                <div class="tab-content active" id="fptp">
+                    <div class="explanation">
+                        <h3>First-Past-The-Post</h3>
+                        <p>The candidate with the most votes wins — even without a majority. Simple, but can produce winners most people didn't vote for.</p>
+                        <div class="fun-fact glass-panel">
+                            <strong>⚡ Fun Fact:</strong> In FPTP, a candidate can win with just 35% of votes if the opposition is split!
+                        </div>
+                        <button class="run-sim-btn" id="btn-fptp">
+                            <span class="btn-icon">▶</span> Run Simulation
+                        </button>
+                    </div>
+                    <div class="sim-visual">
+                        <canvas class="sim-canvas" id="canvas-fptp" width="500" height="400"></canvas>
+                    </div>
+                </div>
+
+                <!-- RCV -->
+                <div class="tab-content" id="rcv">
+                    <div class="explanation">
+                        <h3>Ranked Choice Voting</h3>
+                        <p>Voters rank candidates by preference. If no one gets >50%, the last-place candidate is eliminated and their votes redistribute until a majority winner emerges.</p>
+                        <div class="fun-fact glass-panel">
+                            <strong>⚡ Fun Fact:</strong> RCV eliminates the "spoiler effect" — you can vote your heart without wasting your vote!
+                        </div>
+                        <button class="run-sim-btn" id="btn-rcv">
+                            <span class="btn-icon">▶</span> Run Simulation
+                        </button>
+                        <div class="rcv-status" id="rcv-status">Click "Run Simulation" to begin the ranked choice counting process.</div>
+                    </div>
+                    <div class="sim-visual">
+                        <canvas class="sim-canvas" id="canvas-rcv" width="500" height="400"></canvas>
+                    </div>
+                </div>
+
+                <!-- PR -->
+                <div class="tab-content" id="pr">
+                    <div class="explanation">
+                        <h3>Proportional Representation</h3>
+                        <p>Parties gain seats proportional to their vote share. This ensures that minority voices are represented and power is shared.</p>
+                        <div class="fun-fact glass-panel">
+                            <strong>⚡ Fun Fact:</strong> Most European democracies use PR, which encourages multi-party coalition governments!
+                        </div>
+                        <button class="run-sim-btn" id="btn-pr">
+                            <span class="btn-icon">▶</span> Run Simulation
+                        </button>
+                    </div>
+                    <div class="sim-visual">
+                        <canvas class="sim-canvas" id="canvas-pr" width="500" height="400"></canvas>
+                        <div class="parliament-seats" id="parliament-seats"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== KILLER FEATURE ========== -->
+        <section class="compare-section" id="side-by-side">
+            <div class="section-header fade-up">
+                <span class="badge" style="--badge-color: #EF4444;"><span class="badge-dot" style="background: #EF4444;"></span>Killer Feature</span>
+                <h2>Same Votes, Different Outcomes</h2>
+                <p>Adjust vote distribution and instantly see how the same votes produce different winners under each system.</p>
+            </div>
+            
+            <div class="compare-card glass-panel fade-up">
+                <div class="compare-controls">
+                    <h3>Set Voter Preferences</h3>
+                    <p class="controls-subtitle">Drag sliders to distribute votes. Yellow gets the remainder.</p>
+                    
+                    <div class="slider-group">
+                        <label>
+                            <span class="slider-label"><span class="dot" style="background: #EF4444;"></span> Red Party</span>
+                            <span class="slider-value" id="val-red">40%</span>
+                        </label>
+                        <input type="range" id="votes-red" min="0" max="100" value="40" class="custom-slider" style="--slider-color: #EF4444;">
+                    </div>
+                    <div class="slider-group">
+                        <label>
+                            <span class="slider-label"><span class="dot" style="background: #3B82F6;"></span> Blue Party</span>
+                            <span class="slider-value" id="val-blue">35%</span>
+                        </label>
+                        <input type="range" id="votes-blue" min="0" max="100" value="35" class="custom-slider" style="--slider-color: #3B82F6;">
+                    </div>
+                    <div class="slider-group disabled">
+                        <label>
+                            <span class="slider-label"><span class="dot" style="background: #F59E0B;"></span> Yellow Party</span>
+                            <span class="slider-value" id="val-yellow">25%</span>
+                        </label>
+                        <input type="range" id="votes-yellow" min="0" max="100" value="25" disabled class="custom-slider" style="--slider-color: #F59E0B;">
+                    </div>
+                    
+                    <div class="vote-pie" id="vote-pie">
+                        <svg viewBox="0 0 36 36" class="pie-chart">
+                            <circle id="pie-red" class="pie-segment" cx="18" cy="18" r="15.9155" stroke="#EF4444"/>
+                            <circle id="pie-blue" class="pie-segment" cx="18" cy="18" r="15.9155" stroke="#3B82F6"/>
+                            <circle id="pie-yellow" class="pie-segment" cx="18" cy="18" r="15.9155" stroke="#F59E0B"/>
+                        </svg>
+                    </div>
+                    
+                    <button id="run-all-sims" class="run-sim-btn compare-btn">
+                        <span class="btn-icon">⚡</span> Compare All Systems
+                    </button>
+                </div>
+                
+                <div class="compare-results" id="compare-results">
+                    <div class="result-card glass-panel" id="res-fptp">
+                        <div class="result-header">
+                            <span class="result-icon">🏆</span>
+                            <h4>First-Past-The-Post</h4>
+                        </div>
+                        <div class="winner-display" id="winner-fptp">—</div>
+                        <p class="insight-text" id="insight-fptp"></p>
+                    </div>
+                    <div class="result-card glass-panel" id="res-rcv">
+                        <div class="result-header">
+                            <span class="result-icon">🔄</span>
+                            <h4>Ranked Choice</h4>
+                        </div>
+                        <div class="winner-display" id="winner-rcv">—</div>
+                        <p class="insight-text" id="insight-rcv"></p>
+                    </div>
+                    <div class="result-card glass-panel" id="res-pr">
+                        <div class="result-header">
+                            <span class="result-icon">📊</span>
+                            <h4>Proportional</h4>
+                        </div>
+                        <div class="winner-display" id="winner-pr">—</div>
+                        <p class="insight-text" id="insight-pr"></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Built to demystify democracy. <span class="footer-heart">❤️</span></p>
+        </footer>
+    </main>
+
+    <!-- Modal -->
+    <div id="step-modal" class="modal hidden">
+        <div class="modal-content glass-panel">
+            <button class="close-btn" aria-label="Close modal">&times;</button>
+            <h2 id="modal-title"></h2>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <!-- Confetti Canvas -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <script src="script.js"></script>
+</body>
+</html>
