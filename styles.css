@@ -40,7 +40,7 @@ body {
     animation: fadeInUp 1s ease-out;
 }
 .logo-text {
-    font-size: 3.5rem;
+    font-size: 5.5rem;
     font-weight: 900;
     letter-spacing: -2px;
     background: linear-gradient(135deg, #FFFFFF, #A1A1AA);
