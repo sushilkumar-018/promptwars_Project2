@@ -55,19 +55,22 @@ body {
 
 .hero-logo {
     justify-content: center;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
     animation: fadeInUp 1s ease-out;
 }
 
 .logo-text {
-    font-size: 90px !important;
+    font-size: 100px !important;
     font-weight: 900;
-    letter-spacing: -2px;
-    background: linear-gradient(135deg, #FFFFFF, #A1A1AA);
+    line-height: 1;
+    letter-spacing: -3px;
+    background: linear-gradient(135deg, #8B5CF6, #06B6D4);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.1));
+    filter: drop-shadow(0 4px 25px rgba(139, 92, 246, 0.4));
+    text-transform: tracking-tight;
 }
+
 
 @keyframes fadeInDown {
     from {
