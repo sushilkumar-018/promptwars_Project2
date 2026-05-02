@@ -36,18 +36,17 @@ body {
 }
 .hero-logo {
     justify-content: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
     animation: fadeInUp 1s ease-out;
 }
-.logo-icon {
-    font-size: 2rem;
-    filter: drop-shadow(0 0 15px var(--accent-glow));
-}
 .logo-text {
-    font-size: 1.8rem;
+    font-size: 3.5rem;
+    font-weight: 900;
+    letter-spacing: -2px;
     background: linear-gradient(135deg, #FFFFFF, #A1A1AA);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 20px rgba(255,255,255,0.1));
 }
 @keyframes fadeInDown {
     from { opacity: 0; transform: translateY(-20px); }
