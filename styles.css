@@ -60,7 +60,7 @@ body {
 }
 
 .logo-text {
-    font-size: 500px;
+    font-size: clamp(4rem, 12vw, 150px);
     font-weight: 900;
     letter-spacing: -2px;
     background: linear-gradient(135deg, #FFFFFF, #A1A1AA);
@@ -209,7 +209,7 @@ body {
 
 .title-line {
     display: block;
-    font-size: 100px;
+    font-size: clamp(3rem, 10vw, 120px);
     font-weight: 900;
     line-height: 1.05;
     letter-spacing: -2px;
@@ -1202,13 +1202,17 @@ body {
     }
 
     .title-line {
-        font-size: 3.5rem;
+        font-size: clamp(2.5rem, 8vw, 80px);
     }
 }
 
 @media (max-width: 768px) {
+    .logo-text {
+        font-size: clamp(3rem, 12vw, 80px);
+    }
+
     .title-line {
-        font-size: 2.5rem;
+        font-size: clamp(2rem, 8vw, 60px);
     }
 
     .pipeline-stages {
