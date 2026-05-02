@@ -60,7 +60,7 @@ body {
 }
 
 .logo-text {
-    font-size: clamp(4rem, 12vw, 150px);
+    font-size: 500px !important;
     font-weight: 900;
     letter-spacing: -2px;
     background: linear-gradient(135deg, #FFFFFF, #A1A1AA);
@@ -1207,10 +1207,6 @@ body {
 }
 
 @media (max-width: 768px) {
-    .logo-text {
-        font-size: clamp(3rem, 12vw, 80px);
-    }
-
     .title-line {
         font-size: clamp(2rem, 8vw, 60px);
     }
