@@ -1,5 +1,5 @@
-# How Votes Are Counted 🗳️
-### An Interactive Election Explainer
+# VoteWise 🗳️
+### How Votes Are Counted: An Interactive Election Explainer
 
 This is a premium, interactive web application designed to demystify the mechanics of democracy. From the moment a ballot is cast to the final certification of results, this guide walks users through the lifecycle of a vote and the mathematical models used to determine winners.
 
