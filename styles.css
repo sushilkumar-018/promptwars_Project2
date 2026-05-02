@@ -25,19 +25,7 @@ body {
 }
 .hidden { display: none !important; }
 
-/* Navbar & Logo */
-.navbar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    padding: 2rem 4rem;
-    z-index: 10;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    animation: fadeInDown 1s ease-out;
-}
+/* Logo */
 .logo {
     display: flex;
     align-items: center;
@@ -46,11 +34,17 @@ body {
     font-weight: 900;
     letter-spacing: -1px;
 }
+.hero-logo {
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    animation: fadeInUp 1s ease-out;
+}
 .logo-icon {
-    font-size: 1.8rem;
-    filter: drop-shadow(0 0 12px var(--accent-glow));
+    font-size: 2rem;
+    filter: drop-shadow(0 0 15px var(--accent-glow));
 }
 .logo-text {
+    font-size: 1.8rem;
     background: linear-gradient(135deg, #FFFFFF, #A1A1AA);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
