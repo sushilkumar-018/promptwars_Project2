@@ -6,9 +6,7 @@ COPY index.html /usr/share/nginx/html/
 COPY styles.css /usr/share/nginx/html/
 COPY script.js /usr/share/nginx/html/
 
-# Copy the custom Nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copy the Nginx configuration as a template. 
+# The official Nginx image will automatically replace ${PORT} and move it to /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/templates/default.conf.template
 
-# Cloud Run requires the container to listen on the port specified by the PORT environment variable.
-# We will use envsubst to replace the PORT variable in the Nginx config at runtime.
-CMD /bin/sh -c "envsubst '\\$PORT' < /etc/nginx/conf.d/default.conf > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
