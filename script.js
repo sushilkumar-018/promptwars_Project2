@@ -381,29 +381,304 @@ document.getElementById('run-all-sims').addEventListener('click', () => {
     setTimeout(() => launchConfetti(), 600);
 });
 
+// ===== FAILURE MODE LOGIC =====
+let isFailureMode = false;
+let stats = { total: 0, rejected: 0, pending: 0 };
+
+const failureToggle = document.getElementById('failure-mode-toggle');
+const statusPanel = document.getElementById('status-panel');
+const warningTimeline = document.getElementById('warning-timeline');
+
+failureToggle.addEventListener('change', (e) => {
+    isFailureMode = e.target.checked;
+    statusPanel.classList.toggle('hidden', !isFailureMode);
+    warningTimeline.classList.toggle('hidden', !isFailureMode);
+    if (isFailureMode) {
+        addWarning("FAILURE MODE ACTIVATED: System anomalies simulated.");
+    } else {
+        warningTimeline.innerHTML = '';
+        resetStats();
+    }
+});
+
+function addWarning(msg) {
+    const el = document.createElement('div');
+    el.className = 'warning-msg';
+    el.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+    warningTimeline.prepend(el);
+}
+
+// ===== CONFIDENCE METER LOGIC =====
+const confCanvas = document.getElementById('confidence-canvas');
+const confCtx = confCanvas.getContext('2d');
+let currentConfidence = 0;
+let targetConfidence = 0;
+
+function calculateConfidence(votesCounted) {
+    // Total expected votes for simulation purposes (e.g., 50)
+    const expectedTotal = 50; 
+    const baseConf = (votesCounted / expectedTotal) * 100;
+    
+    // Adjustment factor: slower growth at start, faster as we approach total
+    const adjustment = votesCounted < 10 ? 0.8 : 1.2;
+    return Math.min(Math.round(baseConf * adjustment), 100);
+}
+
+function updateConfidenceUI(val) {
+    const statusEl = document.getElementById('confidence-status');
+    const valEl = document.getElementById('confidence-val');
+    
+    valEl.textContent = `${val}%`;
+    
+    if (val < 50) {
+        statusEl.textContent = "Uncertain";
+        statusEl.style.color = "var(--text-secondary)";
+    } else if (val < 80) {
+        statusEl.textContent = "Leaning";
+        statusEl.style.color = "var(--warning)";
+    } else {
+        statusEl.textContent = "Strong Lead";
+        statusEl.style.color = "var(--accent-3)";
+    }
+    
+    targetConfidence = val;
+}
+
+function drawConfidenceGauge() {
+    const W = confCanvas.width, H = confCanvas.height;
+    const center = W / 2;
+    const radius = 35;
+    
+    // Smooth animation
+    if (currentConfidence < targetConfidence) currentConfidence += 0.5;
+    else if (currentConfidence > targetConfidence) currentConfidence -= 0.5;
+
+    confCtx.clearRect(0, 0, W, H);
+    
+    // Background Circle
+    confCtx.beginPath();
+    confCtx.arc(center, center, radius, 0, Math.PI * 2);
+    confCtx.strokeStyle = "rgba(255,255,255,0.05)";
+    confCtx.lineWidth = 6;
+    confCtx.stroke();
+    
+    // Progress Arc
+    const startAngle = -Math.PI / 2;
+    const endAngle = startAngle + (currentConfidence / 100) * (Math.PI * 2);
+    
+    confCtx.beginPath();
+    confCtx.arc(center, center, radius, startAngle, endAngle);
+    
+    // Dynamic color based on confidence
+    let color = "#3B82F6"; // Blue (default)
+    if (currentConfidence >= 80) color = "#10B981"; // Green
+    else if (currentConfidence >= 50) color = "#F59E0B"; // Orange
+    
+    confCtx.strokeStyle = color;
+    confCtx.lineWidth = 6;
+    confCtx.lineCap = "round";
+    confCtx.stroke();
+    
+    requestAnimationFrame(drawConfidenceGauge);
+}
+
+// Update updateStats to include confidence
+function updateStats() {
+    document.getElementById('stat-total').textContent = stats.total;
+    document.getElementById('stat-rejected').textContent = stats.rejected;
+    document.getElementById('stat-pending').textContent = stats.pending;
+    
+    const newConf = calculateConfidence(stats.total);
+    updateConfidenceUI(newConf);
+}
+
+// Start gauge animation loop
+drawConfidenceGauge();
+
+// Update run-all-sims to include recount check
+const originalRunSims = document.getElementById('run-all-sims').onclick;
+document.getElementById('run-all-sims').addEventListener('click', () => {
+    const r = parseInt(redSlider.value);
+    const b = parseInt(blueSlider.value);
+    simulateRecount({r, b});
+});
+
+// ===== COUNTRY PRESETS CONFIG =====
+const countrySystems = {
+    india: {
+        name: "India",
+        system: "First-Past-The-Post",
+        regions: 543,
+        rules: "Single-member constituencies, winner takes all.",
+        pipeline: [
+            { emoji: '🗳', label: 'EVM Voting', title: 'EVM Casting', desc: 'Voters use Electronic Voting Machines (EVMs). VVPAT provides a physical audit trail.', warning: '⚠ Risk: EVM security concerns, long queues.' },
+            { emoji: '🔒', label: 'Strong Room', title: 'Secure Storage', desc: 'EVMs are sealed and stored in "Strong Rooms" under 24/7 guard until counting day.', warning: '⚠ Risk: Tampering rumors, surveillance gaps.' }
+        ]
+    },
+    usa: {
+        name: "USA",
+        system: "Electoral College",
+        regions: 50,
+        rules: "State-based winner-take-all (mostly). 270 to win.",
+        pipeline: [
+            { emoji: '📮', label: 'Mail-in/Early', title: 'Hybrid Casting', desc: 'Massive use of mail-in ballots. Signature verification is a key security step.', warning: '⚠ Risk: Slow mail processing, legal challenges.' },
+            { emoji: '🔢', label: 'State Tally', title: 'State Certification', desc: 'Each state certifies results independently before electors meet.', warning: '⚠ Risk: Safe harbor deadlines, contested electors.' }
+        ]
+    },
+    germany: {
+        name: "Germany",
+        system: "Mixed-Member Proportional",
+        regions: 299,
+        rules: "Two votes per person: one for local candidate, one for party list.",
+        pipeline: [
+            { emoji: '📄', label: 'Double Ballot', title: 'Dual Casting', desc: 'Voters mark two names. First vote is for local, second for party share.', warning: '⚠ Risk: Voter confusion with overhang seats.' },
+            { emoji: '⚖', label: 'Equalization', title: 'Seat Balancing', desc: 'Extra "overhang" and "leveling" seats are added to ensure proportionality.', warning: '⚠ Risk: Parliament size can grow significantly.' }
+        ]
+    },
+    australia: {
+        name: "Australia",
+        system: "Ranked Choice",
+        regions: 151,
+        rules: "Preferential voting. Mandatory participation.",
+        pipeline: [
+            { emoji: '🔢', label: 'Preferences', title: 'Ranking', desc: 'Voters MUST rank all candidates. Compulsory voting ensures high turnout.', warning: '⚠ Risk: Donkey voting (sequential ranking).' },
+            { emoji: '🔄', label: 'Distribution', title: 'Preference Flow', desc: 'Lower-ranked candidates are eliminated; their votes flow to next preferences.', warning: '⚠ Risk: Complex tallying cycles.' }
+        ]
+    }
+};
+
+const presetSelector = document.getElementById('country-preset');
+
+presetSelector.addEventListener('change', (e) => {
+    const country = countrySystems[e.target.value];
+    applyCountryPreset(country);
+});
+
+function applyCountryPreset(config) {
+    // Update labels and simulation variables
+    console.log(`Switching to ${config.name} system: ${config.system}`);
+    
+    // Update Pipeline UI (re-injecting with new context if needed)
+    // For this version, we will update the description and add a warning
+    addWarning(`SYSTEM UPDATE: Loaded ${config.name} model (${config.system}).`);
+    
+    // Update simulation logic constants
+    // (In a real app, this would change the math in calculateConfidence or rcv loops)
+}
+
+// Initial application
+applyCountryPreset(countrySystems.india);
+
+// ===== INIT =====
+buildPipeline();
+setupBallot();
+
 // ===== SCROLL ANIMATIONS =====
 function checkScroll() {
-    document.querySelectorAll('.fade-up').forEach(el => {
-        if (el.getBoundingClientRect().top < window.innerHeight * 0.88) el.classList.add('visible');
+    document.querySelectorAll(".fade-up").forEach(el => {
+        if (el.getBoundingClientRect().top < window.innerHeight * 0.88) el.classList.add("visible");
     });
     const winScroll = document.documentElement.scrollTop;
     const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-    document.getElementById('progress-bar').style.width = Math.min((winScroll / height) * 100, 100) + '%';
+    document.getElementById("progress-bar").style.width = Math.min((winScroll / height) * 100, 100) + "%";
 }
-window.addEventListener('scroll', checkScroll);
+window.addEventListener("scroll", checkScroll);
 
 // ===== HERO START =====
-document.getElementById('start-btn').addEventListener('click', () => {
-    const hero = document.getElementById('hero');
-    hero.style.opacity = '0';
+document.getElementById("start-btn").addEventListener("click", () => {
+    const hero = document.getElementById("hero");
+    hero.style.opacity = "0";
     setTimeout(() => {
-        hero.classList.add('hidden');
-        document.getElementById('main-content').classList.remove('hidden');
+        hero.classList.add("hidden");
+        document.getElementById("main-content").classList.remove("hidden");
         window.scrollTo({ top: 0 });
         checkScroll();
     }, 600);
 });
 
-// ===== INIT =====
-buildPipeline();
-setupBallot();
+function resetStats() {
+    stats = { total: 0, rejected: 0, pending: 0 };
+    updateStats();
+}
+
+async function simulateDelay(stepName) {
+    if (!isFailureMode) return 800;
+    const delay = Math.random() * 2000 + 1000;
+    addWarning(`Delay detected in ${stepName}: Transport lag +${Math.round(delay)}ms`);
+    return delay;
+}
+
+function simulateRejection() {
+    if (!isFailureMode) return false;
+    const rejected = Math.random() < 0.05; // 5% rejection rate
+    if (rejected) {
+        stats.rejected++;
+        addWarning("Machine Error: Ballot rejected due to improper marking.");
+    }
+    return rejected;
+}
+
+function simulateRecount(votes) {
+    if (!isFailureMode) return;
+    const margin = Math.abs(votes.r - votes.b);
+    if (margin < 2) {
+        addWarning(`CRITICAL: Margin < 2% (${margin}%). Triggering automatic recount...`);
+        launchConfetti(); // Visual cue for recount start
+    }
+}
+
+// Override setupBallot to include failure logic
+function setupBallot() {
+    const candidates = document.querySelectorAll(".ballot-candidate");
+    const castBtn = document.getElementById("cast-vote-btn");
+    candidates.forEach(c => {
+        c.addEventListener("click", () => {
+            candidates.forEach(x => x.classList.remove("selected"));
+            c.classList.add("selected");
+            selectedCandidate = c.dataset.candidate;
+            castBtn.disabled = false;
+        });
+    });
+    castBtn.addEventListener("click", async () => {
+        if (!selectedCandidate) return;
+        castBtn.disabled = true;
+        castBtn.innerHTML = "<span>Casting...</span>";
+        
+        const journey = document.getElementById("ballot-journey");
+        const tooltip = document.getElementById("ballot-tooltip");
+        journey.classList.remove("hidden");
+        
+        const steps = document.querySelectorAll(".journey-step");
+        stats.pending++;
+        updateStats();
+
+        for (let i = 0; i < steps.length; i++) {
+            const s = steps[i];
+            const stepName = s.querySelector("span").textContent;
+            
+            const delay = await simulateDelay(stepName);
+            await new Promise(r => setTimeout(r, delay));
+            
+            s.classList.add("active");
+            
+            // Rejection logic at "Counted" step
+            if (i === 3 && simulateRejection()) {
+                castBtn.innerHTML = "<span style=\"color:#EF4444\">Ballot Rejected!</span>";
+                addWarning("Process Terminated: Ballot discarded.");
+                stats.pending--;
+                updateStats();
+                return;
+            }
+        }
+
+        stats.total++;
+        stats.pending--;
+        updateStats();
+        
+        tooltip.classList.remove("hidden");
+        launchConfetti();
+        castBtn.innerHTML = "<span>Vote Cast! ✓</span>";
+        castBtn.style.background = "linear-gradient(135deg, #10B981, #059669)";
+    });
+}
+
