@@ -682,3 +682,94 @@ function setupBallot() {
     });
 }
 
+
+// ===== ELECTION MAP LOGIC =====
+const regionData = {
+    "North": { red: 45, blue: 30, yellow: 25, leading: "red", pop: "12.5M" },
+    "East": { red: 20, blue: 55, yellow: 25, leading: "blue", pop: "8.2M" },
+    "West": { red: 35, blue: 35, yellow: 30, leading: "yellow", pop: "10.1M" },
+    "South": { red: 50, blue: 20, yellow: 30, leading: "red", pop: "15.4M" }
+};
+
+let currentRegion = null;
+
+const mapRegions = document.querySelectorAll(".map-region");
+const mapTooltip = document.getElementById("map-tooltip");
+const regionNameDisplay = document.getElementById("region-name");
+const regionStatsDisplay = document.getElementById("region-stats");
+
+function initMap() {
+    mapRegions.forEach(region => {
+        const id = region.dataset.region;
+        const data = regionData[id];
+        
+        // Initial color based on leader
+        const colors = { red: "rgba(239, 68, 68, 0.4)", blue: "rgba(59, 130, 246, 0.4)", yellow: "rgba(245, 158, 11, 0.4)" };
+        region.setAttribute("fill", colors[data.leading]);
+        region.style.fill = colors[data.leading]; // Explicitly set style
+
+        region.addEventListener("mouseenter", (e) => {
+            const rect = e.target.getBoundingClientRect();
+            mapTooltip.style.left = `${e.clientX + 15}px`;
+            mapTooltip.style.top = `${e.clientY + 15}px`;
+            mapTooltip.innerHTML = `<strong>${id}</strong><br>Leading: ${data.leading.toUpperCase()}`;
+            mapTooltip.classList.remove("hidden");
+        });
+
+        region.addEventListener("mousemove", (e) => {
+            mapTooltip.style.left = `${e.clientX + 15}px`;
+            mapTooltip.style.top = `${e.clientY + 15}px`;
+        });
+
+        region.addEventListener("mouseleave", () => {
+            mapTooltip.classList.add("hidden");
+        });
+
+        region.addEventListener("click", () => {
+            // Remove active class from all
+            mapRegions.forEach(r => r.classList.remove("active-region"));
+            region.classList.add("active-region");
+            currentRegion = id;
+            showRegionDetails(id, data);
+        });
+    });
+}
+
+function showRegionDetails(id, data) {
+    regionNameDisplay.textContent = `${id} Region Details`;
+    regionStatsDisplay.innerHTML = `
+        <div class="region-stat-row">
+            <span class="region-stat-label">Population</span>
+            <span class="region-stat-value">${data.pop}</span>
+        </div>
+        <div class="region-stat-row">
+            <span class="region-stat-label" style="color:#EF4444">Red Party</span>
+            <span class="region-stat-value">${data.red}%</span>
+        </div>
+        <div class="region-stat-row">
+            <span class="region-stat-label" style="color:#3B82F6">Blue Party</span>
+            <span class="region-stat-value">${data.blue}%</span>
+        </div>
+        <div class="region-stat-row">
+            <span class="region-stat-label" style="color:#F59E0B">Yellow Party</span>
+            <span class="region-stat-value">${data.yellow}%</span>
+        </div>
+        <div class="region-stat-row" style="margin-top:1rem; border-top:2px solid var(--border-color)">
+            <span class="region-stat-label">Projected Winner</span>
+            <span class="region-stat-value" style="color:var(--accent-3)">${data.leading.toUpperCase()}</span>
+        </div>
+    `;
+    
+    // Smooth transition
+    regionStatsDisplay.style.opacity = "0";
+    regionStatsDisplay.style.transform = "translateY(10px)";
+    setTimeout(() => {
+        regionStatsDisplay.style.transition = "all 0.4s ease";
+        regionStatsDisplay.style.opacity = "1";
+        regionStatsDisplay.style.transform = "translateY(0)";
+    }, 50);
+}
+
+// Call map init
+initMap();
+

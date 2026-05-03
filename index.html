@@ -189,6 +189,40 @@
             </div>
         </section>
 
+        <!-- ========== INTERACTIVE ELECTION MAP ========== -->
+        <section class="map-section" id="election-map-section">
+            <div class="section-header fade-up">
+                <span class="badge" style="--badge-color: #3B82F6;"><span class="badge-dot" style="background: #3B82F6;"></span>Regional Insights</span>
+                <h2>Regional Results Map</h2>
+                <p>Click on any region to see the local vote breakdown. Colors indicate the leading party.</p>
+            </div>
+            
+            <div class="map-container glass-panel fade-up">
+                <div class="map-layout">
+                    <div class="map-svg-wrapper">
+                        <svg id="election-map" viewBox="0 0 400 300" class="election-map-svg">
+                            <!-- Region 1 -->
+                            <path class="map-region" d="M50,50 L150,50 L150,150 L50,150 Z" data-region="North" fill="rgba(255,255,255,0.05)"/>
+                            <!-- Region 2 -->
+                            <path class="map-region" d="M150,50 L350,50 L350,150 L150,150 Z" data-region="East" fill="rgba(255,255,255,0.05)"/>
+                            <!-- Region 3 -->
+                            <path class="map-region" d="M50,150 L200,150 L200,250 L50,250 Z" data-region="West" fill="rgba(255,255,255,0.05)"/>
+                            <!-- Region 4 -->
+                            <path class="map-region" d="M200,150 L350,150 L350,250 L200,250 Z" data-region="South" fill="rgba(255,255,255,0.05)"/>
+                        </svg>
+                        <div id="map-tooltip" class="map-tooltip hidden"></div>
+                    </div>
+                    
+                    <div class="map-details glass-panel" id="region-details">
+                        <h3 id="region-name">Select a Region</h3>
+                        <div id="region-stats" class="region-stats">
+                            <p class="placeholder-text">Click a region on the map to see specific results and demographics.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- ========== VOTING SYSTEMS ========== -->
         <section class="systems-section" id="voting-systems-section">
             <div class="section-header fade-up">
